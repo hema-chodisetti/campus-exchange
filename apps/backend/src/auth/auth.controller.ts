@@ -5,11 +5,13 @@ import {
   Get,
   UseGuards,
   Request,
+  HttpCode,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { JwtAuthGuard } from './guards';
 
 @Controller('auth')
@@ -19,6 +21,7 @@ export class AuthController {
   // Strict rate limit: 5 registrations per minute per IP
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('register')
+  @HttpCode(201)
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
@@ -28,6 +31,11 @@ export class AuthController {
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post('verify-otp')
+  verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    return this.authService.verifyOtp(verifyOtpDto);
   }
 
   @UseGuards(JwtAuthGuard)

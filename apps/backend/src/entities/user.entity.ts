@@ -42,6 +42,9 @@ export class User {
   @Column({ name: 'verification_token', nullable: true })
   verificationToken: string;
 
+  @Column({ name: 'otp_code', type: 'varchar', nullable: true, select: false })
+  otpCode: string | null;
+
   @Column({
     name: 'average_rating',
     type: 'decimal',

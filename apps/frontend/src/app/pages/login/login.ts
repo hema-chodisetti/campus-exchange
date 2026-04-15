@@ -126,7 +126,9 @@ export class LoginComponent {
         this.router.navigateByUrl(this.returnUrl);
       },
       error: (err) => {
-        this.error = err.error?.message || 'Invalid credentials';
+        this.error = err.status === 403
+          ? 'Your account is pending email verification. Please check your FAU email.'
+          : (err.error?.message || 'Invalid credentials');
         this.loading = false;
       },
     });

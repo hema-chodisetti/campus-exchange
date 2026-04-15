@@ -52,6 +52,16 @@ export class AuthService {
     );
   }
 
+  verifyOtp(email: string, otp: string) {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/verify-otp`, { email, otp }).pipe(
+      tap((res) => {
+        sessionStorage.setItem('token', res.accessToken);
+        sessionStorage.setItem('user', JSON.stringify(res.user));
+        this.currentUserSubject.next(res.user);
+      })
+    );
+  }
+
   logout() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
