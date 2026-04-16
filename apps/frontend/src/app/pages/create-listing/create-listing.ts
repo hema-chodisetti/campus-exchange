@@ -34,15 +34,15 @@ import { Category, CreateListingRequest } from '@campusexchange/shared';
               <label>Price ($)</label>
               <input type="number" [(ngModel)]="price" name="price" min="0" step="0.01" required />
             </div>
-            <div class="form-group">
-              <label>Category</label>
-              <select [(ngModel)]="categoryId" name="categoryId" required>
-                <option [ngValue]="undefined" disabled>Select category</option>
-                @for (cat of categories; track cat.id) {
-                  <option [ngValue]="cat.id">{{ cat.name }}</option>
-                }
-              </select>
-            </div>
+       <div class="form-group">
+  <label>Category</label>
+  <select [(ngModel)]="categoryId" name="categoryId" required>
+    <option value="" disabled selected>Select category</option>
+    @for (cat of categories; track cat.id) {
+      <option [value]="cat.id">{{ cat.name }}</option>
+    }
+  </select>
+</div>
           </div>
 
           <div class="form-row">
@@ -149,7 +149,7 @@ export class CreateListingComponent implements OnInit {
   title = '';
   description = '';
   price?: number;
-  categoryId?: number;
+categoryId: number | '' = '';
   conditionStatus: 'new' | 'like_new' | 'good' | 'fair' | 'poor' = 'good';
   listingType: 'fixed' | 'bidding' = 'fixed';
   bidEndDate = '';
@@ -162,9 +162,12 @@ export class CreateListingComponent implements OnInit {
     private router: Router,
   ) {}
 
-  ngOnInit() {
-    this.listingsService.getCategories().subscribe((cats) => (this.categories = cats));
-  }
+ngOnInit() {
+  this.listingsService.getCategories().subscribe((cats) => {
+    console.log('categories loaded:', cats);
+    this.categories = cats;
+  });
+}
 
   onSubmit() {
     this.error = '';
@@ -188,16 +191,16 @@ export class CreateListingComponent implements OnInit {
 
     this.loading = true;
 
-    const data: CreateListingRequest = {
-      title: this.title.trim(),
-      description: this.description.trim(),
-      price: this.price,
-      categoryId: this.categoryId,
-      conditionStatus: this.conditionStatus,
-      listingType: this.listingType,
-      bidEndDate: this.listingType === 'bidding' && this.bidEndDate ? this.bidEndDate : undefined,
-      imageUrls: this.imageUrl ? [this.imageUrl] : undefined,
-    };
+const data: CreateListingRequest = {
+  title: this.title.trim(),
+  description: this.description.trim(),
+  price: this.price,
+  categoryId: Number(this.categoryId),
+  conditionStatus: this.conditionStatus,
+  listingType: this.listingType,
+  bidEndDate: this.listingType === 'bidding' && this.bidEndDate ? this.bidEndDate : undefined,
+  imageUrls: this.imageUrl ? [this.imageUrl] : undefined,
+};
 
     this.listingsService.createListing(data).subscribe({
       next: (listing) => {

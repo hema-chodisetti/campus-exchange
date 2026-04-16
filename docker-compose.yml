@@ -1,23 +1,24 @@
 services:
-  # MySQL Database
   db:
     image: mysql:8.0
     container_name: campusexchange-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: campusexchange
+      MYSQL_USER: campususer
+      MYSQL_PASSWORD: campuspass
+    ports:
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./.docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # NestJS backend — serves both the API and the Angular frontend
   backend:
     container_name: campusexchange
     build:
@@ -25,7 +26,7 @@ services:
       dockerfile: apps/backend/Dockerfile
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - "3000:3000"
     env_file:
       - .env
     depends_on:
